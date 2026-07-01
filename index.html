@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Markdown Viewer</title>
+
+  <!-- Markdown parser -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 2rem; max-width: 900px; }
+    pre { overflow: auto; padding: 1rem; background: #f6f8fa; border-radius: 8px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    img { max-width: 100%; }
+  </style>
+</head>
+<body>
+  <div id="content">Laden…</div>
+
+  <script>
+    const RAW_MD_URL = "app/knowledgebase/05-Taakwachtrijen/11229164 - Process Debrief Message MOB.md"; // bv. https://raw.githubusercontent.com/user/repo/main/docs/file.md
+
+    async function loadMarkdown() {
+      const res = await fetch(RAW_MD_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const md = await res.text();
+
+      // Veiligheidsnoot: marked is standaard niet "fully sanitizing".
+      // Voor eigen gebruik is dit vaak prima; anders kun je DOMPurify toevoegen.
+      const html = marked.parse(md);
+      document.getElementById("content").innerHTML = html;
+    }
+
+    loadMarkdown().catch(err => {
+      document.getElementById("content").textContent = "Fout: " + err.message;
+    });
+  </script>
+</body>
+</html>
